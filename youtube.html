@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>youtube</title>
+        <style>
+            #one{
+                width: 30%;
+                padding: 2%;
+            }
+            #grid{
+                display: grid;
+                grid-template-columns: repeat(4,20%);
+                grid-gap: 5%;
+            }
+        </style>
+    </head>
+    <body>
+        <div style="border-bottom: 1px solid rgb(224, 216, 216);padding-bottom: 5%;margin-bottom: 2%;">
+            <img style="width: 8%; margin-left: 3%;float: left" src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTZrnIBK-bq5Ij_W4LwLdqYs_bEXFAwhimHlQ&usqp=CAU">
+            <input id="inp" type="text" style="margin-right: 0%;float: left;margin-left: 16%;margin-top: 1%;width: 35%;height: 1.8vw;font-size: 1.15vw;border: 1px solid rgb(194, 186, 186);" placeholder="Search">
+            <button onclick="getData()" style="width: 5%;margin-left: 0%;float: left;margin-top: 1%;height: 2.1vw;border: 1px solid rgb(194, 186, 186);"><img id="one" src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQVDhYHl16k2MChwM-m_wfUEJqKa2s629ndzA&usqp=CAU"></button>
+            <img style="float: left;width: 1.2%;margin-top: 1.2%;margin-left: 1.5%;" src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSj-sS45bSSrPqa0zDk3GZDiykmTcbEjiL6XA&usqp=CAU"> 
+            <img style="float: left;width: 1.8%;margin-top: 1.2%;margin-left: 15%;" src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRvSzhu7wClUMeYJiDV14aIf9rBmFW6BjbM2w&usqp=CAU">
+        </div>
+        <div id="grid">
+
+        </div>
+    </body>
+</html>
+
+
+<script>
+    let div = document.getElementById("grid")
+    async function trending(){
+        div.innerHTML=null;
+        let temp = await fetch("https://youtube.googleapis.com/youtube/v3/videos?part=snippet%2CcontentDetails%2Cstatistics&chart=mostPopular&key=AIzaSyBFv_DWK7fbNpjwlksGesL6tROPzaKsPlc&maxResults=20");
+        
+        let result = await temp.json();
+
+        let {items} = result;
+
+        items = items.filter(({id})=>{
+            return id != undefined
+        })
+
+        items.forEach(({id})=>{
+            let create = document.createElement("div");
+
+            create.innerHTML = `<iframe width="115%" height="250" src="https://www.youtube.com/embed/${id}" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>`;
+            div.append(create)
+        })
+
+    }
+    trending()
+    
+    async function getData(){
+        div.innerHTML=null;
+        let q = document.getElementById("inp").value;
+        let res = await fetch(`https://youtube.googleapis.com/youtube/v3/search?q=${q}&key=AIzaSyBFv_DWK7fbNpjwlksGesL6tROPzaKsPlc&maxResults=20`)
+
+        let data = await res.json();
+
+        let {items} = data;
+
+        items = items.filter(({id : {videoId}}) => {
+            return videoId != undefined;
+        })
+
+        items.forEach(({id:{videoId}}) => {
+            let another = document.createElement("div");
+            another.innerHTML = `<iframe width="115%" height="250" src="https://www.youtube.com/embed/${videoId}" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>`;
+            div.append(another)
+        });
+    }
+    //getData();
+
+</script>
